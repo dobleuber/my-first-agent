@@ -1,3 +1,6 @@
+![image](https://github.com/user-attachments/assets/3e1b165e-5465-40ee-871f-64fe623b45b3)
+
+
 # 🧠 Workshop – Crea tu primer AI Agent con LangGraph
 
 Este proyecto es una plantilla diseñada para enseñar a desarrolladores cómo crear agentes conversacionales usando LangGraph. Algunas de sus características clave incluyen:
