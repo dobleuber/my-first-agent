@@ -281,8 +281,12 @@ Agregar una propiedad `callModelCount` al estado y hacer que se incremente autom
    import { MessagesAnnotation } from "@langchain/langgraph";
 
    // Extiende el estado base para incluir el contador
-   const CustomAnnotation = MessagesAnnotation.extend({
-     callModelCount: { default: 0 }
+   const CustomAnnotation = Annotation.Root({
+     ...MessagesAnnotation.spec,
+     callModelCount: Annotation<number>({
+       value: (prev, next) => next,
+       default: () => 0,
+     }),
    });
    ```
 
