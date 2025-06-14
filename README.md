@@ -258,3 +258,67 @@ Puedes inspirarte en las integraciones disponibles aquí:
 ## ✨ Crédito
 
 Este workshop fue preparado por \[Tu Nombre] para ayudar a desarrolladores a dar sus primeros pasos construyendo agentes conversacionales con LangGraph.
+
+---
+
+## 🧮 Paso 7 – Ejercicio: Contador de llamadas a `callModel`
+
+En este ejercicio aprenderás a trabajar con el **estado** en LangGraph. Implementarás un contador que se incrementa cada vez que el nodo `callModel` es ejecutado.
+
+### ¿Por qué es importante?
+El estado permite que el agente recuerde información entre pasos del grafo. Es fundamental para flujos conversacionales avanzados, seguimiento de contexto, historial, etc.
+
+### Objetivo
+Agregar una propiedad `callModelCount` al estado y hacer que se incremente automáticamente en cada llamada a `callModel`.
+
+### Pasos (compatible con la plantilla actual)
+
+1. **Extiende el estado base de LangGraph**
+   - Abre `apps/agents/src/react-agent/graph.ts`.
+   - Extiende la anotación base para incluir el contador:
+
+   ```ts
+   import { MessagesAnnotation } from "@langchain/langgraph";
+
+   // Extiende el estado base para incluir el contador
+   const CustomAnnotation = MessagesAnnotation.extend({
+     callModelCount: { default: 0 }
+   });
+   ```
+
+2. **Usa el nuevo estado en el grafo**
+   - Cambia la definición del grafo para usar tu anotación extendida:
+
+   ```ts
+   const workflow = new StateGraph(CustomAnnotation, ConfigurationSchema)
+     // ...nodos y edges como antes...
+   ```
+
+3. **Incrementa el contador en `callModel`**
+   - Ajusta la función para leer y actualizar el contador:
+
+   ```ts
+   async function callModel(
+     state: typeof CustomAnnotation.State,
+     config: RunnableConfig,
+   ): Promise<typeof CustomAnnotation.Update> {
+     // ...código existente...
+     const currentCount = state.callModelCount ?? 0;
+     // Llama al modelo como antes...
+     const response = await model.invoke([
+       // ...prompt...
+       ...state.messages,
+     ]);
+     // Devuelve el nuevo estado, incrementando el contador
+     return {
+       messages: [response],
+       callModelCount: currentCount + 1,
+     };
+   }
+   ```
+
+4. **Ajusta los tipos en el resto del archivo**
+   - Asegúrate de que las funciones que reciben el estado usen `CustomAnnotation.State` en vez de `MessagesAnnotation.State`.
+
+### Resultado esperado
+Cada vez que el agente pase por el nodo `callModel`, el contador aumentará. Puedes inspeccionar el estado en LangSmith Studio o imprimirlo para verificar que funciona.
