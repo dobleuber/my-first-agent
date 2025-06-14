@@ -322,3 +322,81 @@ Agregar una propiedad `callModelCount` al estado y hacer que se incremente autom
 
 ### Resultado esperado
 Cada vez que el agente pase por el nodo `callModel`, el contador aumentará. Puedes inspeccionar el estado en LangSmith Studio o imprimirlo para verificar que funciona.
+<<<<<<< HEAD
+=======
+
+---
+
+## 🔀 Paso 8 – Ejercicio: Grafo condicional usando el contador
+
+En este ejercicio aprenderás a crear un **grafo condicional** en LangGraph, usando la variable de estado `callModelCount` para cambiar el flujo de la conversación.
+
+### Objetivo
+Hacer que, después de cierto número de turnos (por ejemplo, 3), el agente dirija el flujo a un nodo especial que muestre un mensaje de cierre o advertencia.
+
+### ¿Por qué es importante?
+Los grafos condicionales permiten que el agente tome decisiones dinámicas según el estado, habilitando flujos conversacionales más ricos y controlados.
+
+### Pasos
+
+1. **Agrega un nodo especial**
+   - Define un nodo llamado `maxTurnsReached`:
+
+   ```ts
+   async function maxTurnsReached(state, config) {
+     return {
+       messages: [{
+         role: "system",
+         content: "¡Has alcanzado el número máximo de turnos permitidos!"
+       }]
+     };
+   }
+   ```
+
+2. **Modifica la función de ruteo condicional**
+   - Haz que la función `routeModelOutput` revise el valor de `callModelCount`:
+
+   ```ts
+   function routeModelOutput(state) {
+     if (state.callModelCount >= 3) {
+       return "maxTurnsReached";
+     }
+     const messages = state.messages;
+     const lastMessage = messages[messages.length - 1];
+     if ((lastMessage?.tool_calls?.length || 0) > 0) {
+       return "tools";
+     } else {
+       return "__end__";
+     }
+   }
+   ```
+
+3. **Agrega el nodo y la transición al grafo**
+   - Incorpora el nuevo nodo y asegúrate de que el flujo condicional lo incluya:
+
+   ```ts
+   const workflow = new StateGraph(CustomAnnotation, ConfigurationSchema)
+     .addNode("callModel", callModel)
+     .addNode("tools", new ToolNode(TOOLS))
+     .addNode("maxTurnsReached", maxTurnsReached)
+     .addEdge("__start__", "callModel")
+     .addConditionalEdges("callModel", routeModelOutput)
+     .addEdge("tools", "callModel");
+   ```
+
+### Resultado esperado
+- El agente funcionará normalmente, pero después de 3 turnos irá al nodo `maxTurnsReached` y mostrará un mensaje especial.
+- Puedes ajustar el umbral o el comportamiento según el caso de uso.
+
+### Diagrama del grafo condicional
+
+```mermaid
+flowchart TD
+  Start["__start__"] --> CallModel["callModel"]
+  CallModel -- "callModelCount < 3\n(sigue flujo normal)" --> Tools["tools"]
+  Tools --> CallModel
+  CallModel -- "callModelCount >= 3\n(límite alcanzado)" --> MaxTurns["maxTurnsReached"]
+  MaxTurns --> End["__end__"]
+  CallModel -- "Sin tool calls\n(fin de conversación)" --> End
+```
+>>>>>>> 4b01939 (Expand README with Step 8 exercise on creating a conditional graph using the callModelCount variable. Added objectives, implementation steps, and a flowchart to guide users in directing conversation flow after a specified number of turns.)
