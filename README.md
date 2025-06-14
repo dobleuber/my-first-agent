@@ -129,6 +129,16 @@ Contiene toda la lógica del agente conversacional:
   * `integration/`: 🔗 Pruebas del flujo completo
   * `unit/`: 🧪 Pruebas de componentes individuales
 
+  ### Diagrama del grafo ReAct (Reason-Act)
+
+```mermaid
+flowchart TD
+  Start["__start__"] --> CallModel["callModel"]
+  CallModel -- "(flujo normal)" --> Tools["tools"]
+  Tools --> CallModel
+  CallModel -- "Sin tool calls\n(fin de conversación)" --> End["__end__"]
+```
+
 #### 🌐 apps/web/ – Frontend de la Aplicación
 
 Interfaz en Next.js 15 para interactuar con el agente:
@@ -255,11 +265,6 @@ Puedes inspirarte en las integraciones disponibles aquí:
 
 ---
 
-## ✨ Crédito
-
-Este workshop fue preparado por \[Tu Nombre] para ayudar a desarrolladores a dar sus primeros pasos construyendo agentes conversacionales con LangGraph.
-
----
 
 ## 🧮 Paso 7 – Ejercicio: Contador de llamadas a `callModel`
 
@@ -326,71 +331,6 @@ Agregar una propiedad `callModelCount` al estado y hacer que se incremente autom
 
 ### Resultado esperado
 Cada vez que el agente pase por el nodo `callModel`, el contador aumentará. Puedes inspeccionar el estado en LangSmith Studio o imprimirlo para verificar que funciona.
-<<<<<<< HEAD
-=======
-
----
-
-## 🔀 Paso 8 – Ejercicio: Grafo condicional usando el contador
-
-En este ejercicio aprenderás a crear un **grafo condicional** en LangGraph, usando la variable de estado `callModelCount` para cambiar el flujo de la conversación.
-
-### Objetivo
-Hacer que, después de cierto número de turnos (por ejemplo, 3), el agente dirija el flujo a un nodo especial que muestre un mensaje de cierre o advertencia.
-
-### ¿Por qué es importante?
-Los grafos condicionales permiten que el agente tome decisiones dinámicas según el estado, habilitando flujos conversacionales más ricos y controlados.
-
-### Pasos
-
-1. **Agrega un nodo especial**
-   - Define un nodo llamado `maxTurnsReached`:
-
-   ```ts
-   async function maxTurnsReached(state, config) {
-     return {
-       messages: [{
-         role: "system",
-         content: "¡Has alcanzado el número máximo de turnos permitidos!"
-       }]
-     };
-   }
-   ```
-
-2. **Modifica la función de ruteo condicional**
-   - Haz que la función `routeModelOutput` revise el valor de `callModelCount`:
-
-   ```ts
-   function routeModelOutput(state) {
-     if (state.callModelCount >= 3) {
-       return "maxTurnsReached";
-     }
-     const messages = state.messages;
-     const lastMessage = messages[messages.length - 1];
-     if ((lastMessage?.tool_calls?.length || 0) > 0) {
-       return "tools";
-     } else {
-       return "__end__";
-     }
-   }
-   ```
-
-3. **Agrega el nodo y la transición al grafo**
-   - Incorpora el nuevo nodo y asegúrate de que el flujo condicional lo incluya:
-
-   ```ts
-   const workflow = new StateGraph(CustomAnnotation, ConfigurationSchema)
-     .addNode("callModel", callModel)
-     .addNode("tools", new ToolNode(TOOLS))
-     .addNode("maxTurnsReached", maxTurnsReached)
-     .addEdge("__start__", "callModel")
-     .addConditionalEdges("callModel", routeModelOutput)
-     .addEdge("tools", "callModel");
-   ```
-
-### Resultado esperado
-- El agente funcionará normalmente, pero después de 3 turnos irá al nodo `maxTurnsReached` y mostrará un mensaje especial.
-- Puedes ajustar el umbral o el comportamiento según el caso de uso.
 
 ### Diagrama del grafo condicional
 
@@ -403,4 +343,21 @@ flowchart TD
   MaxTurns --> End["__end__"]
   CallModel -- "Sin tool calls\n(fin de conversación)" --> End
 ```
->>>>>>> 4b01939 (Expand README with Step 8 exercise on creating a conditional graph using the callModelCount variable. Added objectives, implementation steps, and a flowchart to guide users in directing conversation flow after a specified number of turns.)
+
+## 📚 Ramas de ejercicios
+
+Este repositorio contiene ramas específicas para cada ejercicio práctico del taller:
+
+- **`state-conditional`**: Incluye el ejercicio completo de agregar una variable de estado (`callModelCount`) y una arista condicional que cambia el flujo del grafo según ese estado.
+- **`human`**: Muestra el código para implementar un flujo human-in-the-loop, donde el agente puede pausar la ejecución y pedir confirmación o input humano antes de continuar.
+
+Puedes cambiar de rama con:
+
+```bash
+git switch state-conditional
+# o
+git switch human
+```
+
+Cada rama contiene el código y los comentarios necesarios para entender y probar el ejercicio correspondiente.
+
