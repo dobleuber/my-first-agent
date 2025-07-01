@@ -174,11 +174,12 @@ npm install @langchain/community
 ```ts
 import { WikipediaQueryRun } from "@langchain/community/tools/wikipedia_query_run";
 
-export const wikipediaTool = new WikipediaQueryRun({
+const wikipediaTool = new WikipediaQueryRun({
   topKResults: 3,
   maxDocContentLength: 4000,
 });
 
+// Actualiza el array TOOLS para incluir la nueva herramienta
 export const TOOLS = [searchTavily, wikipediaTool];
 ```
 
@@ -283,7 +284,7 @@ Agregar una propiedad `callModelCount` al estado y hacer que se incremente autom
    - Extiende la anotación base para incluir el contador:
 
    ```ts
-   import { MessagesAnnotation } from "@langchain/langgraph";
+   import { MessagesAnnotation, Annotation } from "@langchain/langgraph";
 
    // Extiende el estado base para incluir el contador
    const CustomAnnotation = Annotation.Root({
