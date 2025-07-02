@@ -351,6 +351,7 @@ Este repositorio contiene ramas específicas para cada ejercicio práctico del t
 
 - **`state-conditional`**: Incluye el ejercicio completo de agregar una variable de estado (`callModelCount`) y una arista condicional que cambia el flujo del grafo según ese estado.
 - **`human`**: Muestra el código para implementar un flujo human-in-the-loop, donde el agente puede pausar la ejecución y pedir confirmación o input humano antes de continuar.
+- **`add-unit-tests`**: Implementa un sistema completo de pruebas unitarias con Jest para backend y frontend, incluyendo tests para herramientas, configuración y utilidades.
 
 Puedes cambiar de rama con:
 
@@ -358,6 +359,8 @@ Puedes cambiar de rama con:
 git switch state-conditional
 # o
 git switch human
+# o
+git switch add-unit-tests
 ```
 
 Cada rama contiene el código y los comentarios necesarios para entender y probar el ejercicio correspondiente.
