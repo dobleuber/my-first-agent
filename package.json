@@ -11,7 +11,9 @@
     "turbo:command": "turbo",
     "format": "turbo format",
     "lint": "turbo lint",
-    "lint:fix": "turbo lint:fix"
+    "lint:fix": "turbo lint:fix",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch"
   },
   "devDependencies": {
     "turbo": "latest",
